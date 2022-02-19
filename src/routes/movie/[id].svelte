@@ -1,0 +1,66 @@
+<script context="module">
+	import { connectionString } from '$lib/dbURL'
+
+	export async function load({ fetch, params }) {
+		const res = await fetch(
+			`https://api.themoviedb.org/3/movie/${params.id}?api_key=${connectionString}&language=en-US&page=1`
+		)
+		const data = await res.json()
+		if (res.ok) {
+			return {
+				props: { movieDetail: data }
+			}
+		}
+	}
+</script>
+
+<script>
+	import { fly } from 'svelte/transition'
+	export let movieDetail
+</script>
+
+<div
+	class="movie-details"
+	in:fly="{{ y: 50, duration: 300, delay: 300 }}"
+	out:fly="{{ duration: 300 }}"
+>
+	<div class="img-container">
+		<img
+			src="{`https://image.tmdb.org/t/p/original${movieDetail.backdrop_path}`}"
+			alt="{movieDetail.title}"
+		/>
+	</div>
+	<div class="txt-container">
+		<h1>{movieDetail.title}</h1>
+		<p class="overview">{movieDetail.overview}</p>
+		<p>
+			<span>Release Date: </span>{movieDetail.release_date}<br />
+			<span>Budget: </span>${movieDetail.budget}<br />
+			<span>Rating: </span>{movieDetail.vote_average}<br />
+			<span>Runtime: </span>{movieDetail.runtime}mins
+		</p>
+	</div>
+</div>
+
+<style>
+	h1 {
+		padding: 1rem 0rem 2rem;
+		font-size: 1.5rem;
+	}
+	p {
+		padding: 1rem 0rem;
+	}
+	.img-container {
+		width: 100%;
+	}
+	img {
+		width: 100%;
+		border-radius: 1rem;
+	}
+	.movie-details {
+		margin: 2rem 20%;
+	}
+	span {
+		font-weight: bold;
+	}
+</style>
